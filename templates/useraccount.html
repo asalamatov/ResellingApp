@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type=email], input[type=password], .firebaseui-container {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #firebaseui-auth-container {
+            margin-top: 20px;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
+</head>
+<body>
+    <h1>User Account</h1>
+    <div class="form-container" id="login-form">
+        <h2>Login</h2>
+        <form action="/useraccount" method="post">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="hidden" name="action" value="login">
+            <button type="submit">Login</button>
+        </form>
+        <!-- Firebase UI Auth Container -->
+        <p><a href="{{url_for('googleLogin')}}">Login with GOOGLE</a></p>
+    </div>
+    <div class="form-container" id="signup-form">
+        <h2>Signup</h2>
+        <form action="/useraccount" method="post">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="hidden" name="action" value="signup">
+            <button type="submit">Signup</button>
+        </form>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth__en.js"></script>
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyDB8HRp2gYjteaS4hryqzQB2fh54FDzWn0",
+        authDomain: "first-b689f.firebaseapp.com",
+        projectId : "first-b689f",
+        storageBucket : "first-b689f.appspot.com",
+        messagingSenderId : "4977128071",
+        appId : "1:4977128071:web:f816e9c1f1094020aefe22",
+        measurementId : "G-TD7WF2EZ6X",
+        databaseURL : "https://DATABASE_NAME.firebaseio.com "
+        // The rest of your Firebase config
+      };
+      firebase.initializeApp(firebaseConfig);
+      
+      var ui = new firebaseui.auth.AuthUI(firebase.auth());
+      var uiConfig = {
+        signInSuccessUrl: '/getoffer',
+        signInOptions: [
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+          // Add other providers as needed
+        ],
+      };
+      ui.start('#firebaseui-auth-container', uiConfig);
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+        // User is signed in, now get the user's ID token
+        user.getIdToken().then((idToken) => {
+            // Send the ID token to your backend via HTTPS
+            fetch('/google_sign_in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({idToken: idToken}),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+            console.log('Success:', data);
+            // Handle success response
+            // Possibly redirect the user or update UI
+            })
+            .catch((error) => {
+            console.error('Error:', error);
+            // Handle errors here
+            });
+            window.location.href = '/getoffer';
+        });
+        } else {
+        // User is signed out
+        // Optionally handle sign out
+        }
+    });
+    
+    
+    </script>
+</body>
+</html>

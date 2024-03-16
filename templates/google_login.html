@@ -1,0 +1,48 @@
+<!-- google_login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Login</title>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyDB8HRp2gYjteaS4hryqzQB2fh54FDzWn0",
+            authDomain: "first-b689f.firebaseapp.com",
+            projectId: "first-b689f",
+            storageBucket: "first-b689f.appspot.com",
+            messagingSenderId: "4977128071",
+            appId: "1:4977128071:web:f816e9c1f1094020aefe22",
+            measurementId: "G-TD7WF2EZ6X"
+            // Your Firebase configuration
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function signInWithGoogle() {
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth()
+                .signInWithPopup(provider)
+                .then((result) => {
+                    // This gives you a Google Access Token. You can use it to access the Google API.
+                    var token = result.credential.accessToken;
+                    // The signed-in user info.
+                    var user = result.user;
+                    // You can redirect the user to your Flask callback URL or handle the session here.
+                    window.location.href = '/google_auth_callback'; // Redirect to a Flask route
+                }).catch((error) => {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    // The email of the user's account used.
+                    var email = error.email;
+                    // The firebase.auth.AuthCredential type that was used.
+                    var credential = error.credential;
+                    // ...
+                });
+        }
+    </script>
+</head>
+<body>
+    <button onclick="signInWithGoogle()">Sign in with Google</button>
+</body>
+</html>

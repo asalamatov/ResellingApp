@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .container {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin: 20px 0;
+        }
+        input[type=email], input[type=password] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            outline: none;
+            margin: 10px 0;
+        }
+        #signUp, #signIn, #googleSignIn {
+            background-color: #007bff;
+        }
+        #signOut {
+            background-color: #dc3545;
+        }
+        #resetPassword {
+            background-color: #ffc107;
+            color: black;
+        }
+        button:hover {
+            opacity: 0.85;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Log into your account</h2>
+        <!-- Start of form element -->
+        <form id="userForm">
+            <input type="email" id="email" placeholder="Email" autocomplete="email" required>
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+            <button type="button" onclick="signIn" id="signIn">Sign In</button>
+            <button type="button" id="googleSignIn">Sign In with Google</button>
+            <button type="button" id="signUp">Don't have an account?</button>
+            <button type="button" id="resetPassword">Reset Password</button>
+        </form>
+        <!-- End of form element -->
+        <button type="button" id="signOut">Sign Out</button> <!-- Kept outside as it doesn't belong to user form operations -->
+        <div class="footer">© 2024 Your Company</div>
+    </div>
+    <!-- Correct way to reference static files in Flask without using url_for in HTML -->
+    <script type="module" src="/static/js/firebase-config.js"></script>
+
+
+
+</body>
+
+<script>
+    //import { signIn, signUp, googleSignIn, resetPassword } from '/static/js/firebase-config.js';
+
+    import { getApp, getApps, initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    //import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"
+    // import { getDatabase  } from firebase/database
+    const firebaseConfig = {
+        apiKey: "AIzaSyDB8HRp2gYjteaS4hryqzQB2fh54FDzWn0",
+        authDomain: "first-b689f.firebaseapp.com",
+        databaseURL: "https://first-b689f-default-rtdb.firebaseio.com",
+        projectId: "first-b689f",
+        storageBucket: "first-b689f.appspot.com",
+        messagingSenderId: "4977128071",
+        appId: "1:4977128071:web:f816e9c1f1094020aefe22",
+        measurementId: "G-TD7WF2EZ6X",
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+    /*
+
+    if (!app) init:
+    else: getApp()
+    */
+    //const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    function writeUserData(userId, email) {
+        return set(ref(database, 'users/' + userId), {
+            email: email,
+        });
+    }
+
+    // Function to update user status
+    function updateUserStatus(userId, email, isOnline) {
+        const userData = {
+            email: email,
+            status: isOnline ? 'online' : 'offline',
+        };
+        return set(ref(database, 'users/' + userId), userData);
+    }
+
+    // Function to handle Google Sign-In
+    function googleSignIn() {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // Google Sign In was successful
+                const user = result.user;
+                console.log('Google Sign In Successful', user);
+                window.location.href='/getoffer'
+                //window.location.href = '/templates/'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Google Sign In Error', error);
+            });
+    }
+
+    // Function to handle password reset
+    function resetPassword(email) {
+        return sendPasswordResetEmail(auth, email);
+    }
+
+    // Function to handle user sign-up
+    function signUp(email, password) {
+        return createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Sign up success
+                const user = userCredential.user;
+                writeUserData(user.uid, email);
+                console.log('Signed Up Successfully!', user);
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign Up Error', error);
+            });
+    }
+
+    // Function to handle user sign-in
+    function signIn(email, password) {
+        return signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Sign in success
+                console.log('Signed In Successfully!', userCredential.user);
+                window.location.href = '/getoffer'
+                //window.location.href = '/templates/'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign In Error', error);
+            });
+    }
+
+    // Function to handle user sign-out
+    function userSignOut() {
+        return signOut(auth)
+            .then(() => {
+                // Sign out success
+                console.log('Signed Out Successfully!');
+                window.location.href = '/templates/son.html'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign Out Error', error);
+            });
+    }
+
+    // Exporting functions for use in HTML files
+    //export { signUp, signIn, googleSignIn, resetPassword, userSignOut, updateUserStatus };
+
+    // Monitor auth state changes
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log('User is signed in', user);
+            // Optionally, update UI or state to reflect sign-in
+        } else {
+            console.log('User is signed out');
+            // Optionally, update UI or state to reflect sign-out
+        }
+    });
+
+ 
+        document.getElementById('signUp').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signUp(email, password)
+                .then(() => console.log('Signed Up Successfully!'))
+                .catch(error => console.error('Sign Up Error', error));
+        });
+
+        document.getElementById('signIn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signIn(email, password)
+                .then(() => console.log('Signed In Successfully!'))
+                .catch(error => console.error('Sign In Error', error));
+        });
+
+        document.getElementById('googleSignIn').addEventListener('click', () => {
+            googleSignIn()
+                .then(() => console.log('Google Sign In Successful'))
+                .catch(error => console.error('Google Sign In Error', error));
+        });
+
+        document.getElementById('resetPassword').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            resetPassword(email)
+                .then(() => console.log('Password reset email sent!'))
+                .catch(error => console.error('Error sending password reset email:', error));
+        });
+</script>
+</html>
+
+
+
+
+
+

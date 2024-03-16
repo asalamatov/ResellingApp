@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Reselling Website</title>
+    <style>
+        /* CSS for centering and styling the heading and body */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 0px;
+            padding: 0;
+            padding-top: 60px; /* Adjust this value to match the height of your tan background */
+            /* padding-bottom: 50px; */
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 65px;
+        }
+
+        #top-container{
+            /* background-image: url("/static/3ENTERISBNBACKGROUND.png");
+            background-repeat: no-repeat;
+            background-size: 100% auto; */
+            background: url("/static/3ENTERISBNBACKGROUND.png") no-repeat center center;
+            flex: 0 1 auto;
+            /*background-position: center 60px; Start the image 60px from the top */
+            /* background-attachment: fixed; Optional: This makes the background image fixed during scroll */
+        }
+        
+
+        h1 {
+            font-size: 36px; /* Adjust the font size */
+            font-weight: bold; /* Make the font bold */
+            color: #2a1d1d; /* Set the font color */
+            background-color: #ffffff7d;
+            padding: 2px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        /* CSS for the tan-colored background at the top */
+        .tan-background {
+            background-color: tan; /* Set the background color to tan */
+            position: fixed; /* Set the position to fixed */
+            top: 0; /* Align the div to the top */
+            left: 0; /* Align the div to the left */
+            width: 100%; /* Set the width to cover the entire width of the viewport */
+            padding: 10px; /* Add padding to the div */
+            box-sizing: border-box; /* Include padding in the total width */
+            z-index: 1000; /* Set a high z-index to ensure it's above other elements */
+            border-bottom: 2px solid #ccc; /* Add a border at the bottom */
+        }
+        
+        .shortcut {
+            margin-right: 20px; /* Add right margin to separate shortcuts */
+            color: #333; /* Set text color */
+            text-decoration: none; /* Remove underline */
+        }
+        /* CSS for the brown background */
+        .brown-background {
+            background-color: #8B4513; /* Set the background color to brown */
+            /*position: absolute; /* Set the position to absolute */
+            bottom: 0; /* Align the div to the bottom */
+            left: 0; /* Align the div to the left */
+            width: 100%; /* Set the width to cover the entire width of the viewport */
+            padding-top: 20px; /*Increase top padding
+            /*padding-bottom: 20px; /* Increase bottom padding */
+            flex: 0 1 40px;
+        }
+        .brown-background a {
+            color: white; /* Set the color of the links to white */
+            text-decoration: none; /* Remove underline from the links */
+            margin: 0 10px; /* Add margin to the links */
+        }
+        /* CSS for centering and styling input fields and buttons */
+        form {
+            margin: 0 auto; /* Center the form horizontally */
+            max-width: 300px; /* Set maximum width for the form */
+            padding: 20px; /* Add padding to the form */
+            /* border: 1px solid #ccc; Add border to the form
+            border-radius: 5px; /* Add border radius to the form */
+            margin-bottom: 10px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%; /* Set input fields to full width */
+            padding: 10px; /* Add padding to input fields */
+            margin-bottom: 15px; /* Add margin below input fields */
+            border: 1px solid #ccc; /* Add border to input fields */
+            border-radius: 5px; /* Add border radius to input fields */
+            box-sizing: border-box; /* Include padding and border in input field's total width */
+        }
+        button {
+            padding: 10px 20px; /* Add padding to buttons */
+            background-color: #19b9f4; /* Set background color for buttons */
+            color: #fff; /* Set text color for buttons */
+            border: none; /* Remove border from buttons */
+            border-radius: 5px; /* Add border radius to buttons */
+            cursor: pointer; /* Add cursor pointer to buttons */
+        }
+        button:hover {
+            background-color: #39e2f8; /* Change background color on hover */
+        }
+        .garbage-bin-button {
+            background-color: transparent !important; /* Make background color transparent */
+            padding: 0; /* Remove padding */
+            border: none; /* Remove border */
+            cursor: pointer; /* Add cursor pointer to indicate clickable */
+        }
+
+        /* Additional styles to ensure the button has no blue background */
+        .garbage-bin-button:hover {
+            background-color: transparent !important; /* Keep background transparent on hover */
+        }
+
+        #center {
+            flex: 1 1 auto;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+    <div id="top-container">
+        <div class="tan-background">
+            <a href="/getoffer" class="shortcut">Shopping Cart</a>
+            <a href="/useraccount" class="shortcut">Sign In</a>
+            <a href="/useraccount" class="shortcut">Register</a>
+            <a href="/useraccount" id="signOut" class="shortcut">Logss Out</a>
+        </div>
+        <div class="content-container">
+            <h1>DON'T LET YOUR MONEY GET WASTE, EARN YOUR MONEY BACK</h1>
+            <form method="post" onsubmit="return validateQuantityInput()">
+                <input type="text" zioid="isbn" name="isbn" placeholder="Enter the ISBN value" required>
+                <br>
+                <input type="number" id="quantity" name="quantity" placeholder="Enter the quantity" min="1">
+                <button type="submit">Get Quote!</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="center">
+
+        {% if shopping_cart %}
+        <div>
+            <h2>Shopping Cart:</h2>
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; padding: 8px;">Delete Item</th>
+                        <th style="border: 1px solid black; padding: 8px;">Image</th>
+                        <th style="border: 1px solid black; padding: 8px;">Item Name</th>
+                        <th style="border: 1px solid black; padding: 8px;">ISBN</th>
+                        <th style="border: 1px solid black; padding: 8px;">Quantity</th>
+                        <th style="border: 1px solid black; padding: 8px;">Earnings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in shopping_cart %}
+                        <tr>
+                            <td style="border: 1px solid black; padding: 8px;"><button class="garbage-bin-button" onclick="deleteItem('{{ item[2] }}')"><img src="/static/trashicon.jpg" alt="Garbage Bin" style="width: 50px; height: 50px; background-color: transparent;"></button></td>
+                            <td style="border: 1px solid black; padding: 8px;"><img src="{{ item[4] }}" alt="Item Image" style="max-width: 50px; max-height: 50px;"></td>
+                            <td style="border: 1px solid black; padding: 8px; max-width: 200px; word-wrap: break-word;">{{ item[1] }}</td>
+                            <td style="border: 1px solid black; padding: 8px;">{{ item[2] }}</td>
+                            <td style="border: 1px solid black; padding: 8px; text-align: center;">
+                                <button onclick="decreaseQuantity('{{ item[2] }}')">-</button>
+                                <input type="number" id="quantity{{ item[2] }}" value="{{ item[3] }}" min="1" onchange="changeQuantity('{{ item[2] }}', this.value)" oninput="validateQuantity(this)" style="width: 60px; text-align: center;"> 
+                                <button onclick="increaseQuantity('{{ item[2] }}')">+</button>
+                            </td>                      
+                            <td id="earnings{{ item[2] }}" style="border: 1px solid black; padding: 8px;">{{ '%.2f' % item[0] }}$</td>
+                        </tr>
+                        
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4" style="border: 1px solid black; padding: 8px; text-align: left;">Total Items: {{ total_quantities }}</td>
+                        <td colspan="2" style="border: 1px solid black; padding: 8px; text-align: right;">Total Earnings: {{ '%.2f' % total_values }}$</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="border: 1px solid black; padding: 8px; text-align: center;">
+                            <form method="post">
+                                <input type="hidden" name="action" value="empty_cart">
+                                <button type="submit" style="padding: 5px 10px; background-color: #ff3333; color: white; border: none; border-radius: 5px; cursor: pointer;">Empty Cart</button>
+                            </form>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div>
+            <h2>Shopping Cart:</h2>
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; padding: 8px;">Delete Item</th>
+                        <th style="border: 1px solid black; padding: 8px;">Image</th>
+                        <th style="border: 1px solid black; padding: 8px;">Item Name</th>
+                        <th style="border: 1px solid black; padding: 8px;">ISBN</th>
+                        <th style="border: 1px solid black; padding: 8px;">Quantity</th>
+                        <th style="border: 1px solid black; padding: 8px;">Earnings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" style="border: 1px solid black; padding: 8px; text-align: left;">Total Items: 0</td>
+                        <td colspan="2" style="border: 1px solid black; padding: 8px; text-align: right;">Total Earnings: 0.00$</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="border: 1px solid black; padding: 8px; text-align: center;">
+                            <form method="post">
+                                <input type="hidden" name="action" value="empty_cart">
+                                <button type="submit" style="padding: 5px 10px; background-color: #ff3333; color: white; border: none; border-radius: 5px; cursor: pointer;">Empty Cart</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+                {% if shopping_cart|length == 0 or total_values < 8.46 %}
+                <tr>
+                    <td colspan="6" style="border: 1px solid rgb(0, 0, 0); padding: 8px; text-align: center; color: rgb(249, 3, 3);">
+                        You need to have at least $8.46 payout in your cart to checkout. Please add more books to your cart.
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+
+        </div>
+        {% endif %}                        
+    </div>
+    <script type="module">
+            //import { signIn, signUp, googleSignIn, resetPassword } from '/static/js/firebase-config.js';
+
+    import { getApp, getApps, initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    //import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"
+    // import { getDatabase  } from firebase/database
+    const firebaseConfig = {
+        apiKey: "AIzaSyDB8HRp2gYjteaS4hryqzQB2fh54FDzWn0",
+        authDomain: "first-b689f.firebaseapp.com",
+        databaseURL: "https://first-b689f-default-rtdb.firebaseio.com",
+        projectId: "first-b689f",
+        storageBucket: "first-b689f.appspot.com",
+        messagingSenderId: "4977128071",
+        appId: "1:4977128071:web:f816e9c1f1094020aefe22",
+        measurementId: "G-TD7WF2EZ6X",
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+    /*
+
+    if (!app) init:
+    else: getApp()
+    */
+    //const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    function writeUserData(userId, email) {
+        return set(ref(database, 'users/' + userId), {
+            email: email,
+        });
+    }
+
+    // Function to update user status
+    function updateUserStatus(userId, email, isOnline) {
+        const userData = {
+            email: email,
+            status: isOnline ? 'online' : 'offline',
+        };
+        return set(ref(database, 'users/' + userId), userData);
+    }
+
+    // Function to handle Google Sign-In
+    function googleSignIn() {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                // Google Sign In was successful
+                const user = result.user;
+                console.log('Google Sign In Successful', user);
+                window.location.href='/getoffer'
+                //window.location.href = '/templates/'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Google Sign In Error', error);
+            });
+    }
+
+    // Function to handle password reset
+    function resetPassword(email) {
+        return sendPasswordResetEmail(auth, email);
+    }
+
+    // Function to handle user sign-up
+    function signUp(email, password) {
+        return createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Sign up success
+                const user = userCredential.user;
+                writeUserData(user.uid, email);
+                console.log('Signed Up Successfully!', user);
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign Up Error', error);
+            });
+    }
+
+    // Function to handle user sign-in
+    function signIn(email, password) {
+        return signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Sign in success
+                console.log('Signed In Successfully!', userCredential.user);
+                window.location.href = '/getoffer'
+                //window.location.href = '/templates/'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign In Error', error);
+            });
+    }
+
+    // Function to handle user sign-out
+    function userSignOut() {
+        return signOut(auth)
+            .then(() => {
+                // Sign out success
+                console.log('Signed Out Successfully!');
+                window.location.href = '/templates/son.html'; // Adjust the URL as needed
+            })
+            .catch((error) => {
+                // Handle Errors here
+                console.error('Sign Out Error', error);
+            });
+    }
+
+    // Exporting functions for use in HTML files
+    //export { signUp, signIn, googleSignIn, resetPassword, userSignOut, updateUserStatus };
+
+    // Monitor auth state changes
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log('User is signed in', user);
+            // Optionally, update UI or state to reflect sign-in
+        } else {
+            console.log('User is signed out');
+            // Optionally, update UI or state to reflect sign-out
+        }
+    });
+
+ 
+        document.getElementById('signUp').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signUp(email, password)
+                .then(() => console.log('Signed Up Successfully!'))
+                .catch(error => console.error('Sign Up Error', error));
+        });
+
+        document.getElementById('signIn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signIn(email, password)
+                .then(() => console.log('Signed In Successfully!'))
+                .catch(error => console.error('Sign In Error', error));
+        });
+
+        document.getElementById('googleSignIn').addEventListener('click', () => {
+            googleSignIn()
+                .then(() => console.log('Google Sign In Successful'))
+                .catch(error => console.error('Google Sign In Error', error));
+        });
+
+        document.getElementById('resetPassword').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            resetPassword(email)
+                .then(() => console.log('Password reset email sent!'))
+                .catch(error => console.error('Error sending password reset email:', error));
+        });
+
+    </script>
+    
+
+    <!-- Brown background div -->
+    <div class="brown-background">
+        <a href="#">Shortcut 1</a>
+        <a href="#">Shortcut 2</a>
+    </div>
+
+    <!-- Template code for shopping cart logic (not shown for brevity) -->
+    <script>
+        // JavaScript functions to handle item deletion and quantity change
+        function deleteItem(isbn) {
+            var confirmDelete = confirm("Are you sure you want to delete this item?");
+            if (confirmDelete) {
+                document.getElementById("isbn").value = isbn;
+                document.getElementById("quantity").value = 0;
+                document.forms[0].submit();
+            }
+        }
+    
+        function decreaseQuantity(isbn) {
+            var quantityElement = document.getElementById("quantity" + isbn);
+            var newQuantity = parseInt(quantityElement.value) - 1;
+            if (newQuantity >= 1) {
+                changeQuantity(isbn, newQuantity);
+            }
+        }
+    
+        function increaseQuantity(isbn) {
+            var quantityElement = document.getElementById("quantity" + isbn);
+            var newQuantity = parseInt(quantityElement.value) + 1;
+            changeQuantity(isbn, newQuantity);
+        }
+    
+        function changeQuantity(isbn, newQuantity) {
+            if (newQuantity >= 1) {
+                document.getElementById("isbn").value = isbn;
+                document.getElementById("quantity").value = newQuantity;
+                document.forms[0].submit();
+            } else {
+                alert("Quantity must be greater than or equal to 1.");
+            }
+        }
+    
+        function validateQuantityInput() {
+            var quantityElement = document.getElementById("quantity");
+            if (quantityElement.value.trim() === "") {
+                quantityElement.value = 1; // Set quantity to 1 if input is empty
+            }
+            return true; // Ensure to return true to allow form submission
+        }
+    </script>
+</body>
+</html>
