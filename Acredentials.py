@@ -1,5 +1,0 @@
-credentials = dict(
-    refresh_token="Atzr|IwEBIP3bOhLh6fvXS352aGrDUdhBq_Bh4kFS7QX0i_VZ1ECmHtVBSClso-p6JOi2JN7NTxTAZY0kZeVRGZr3RRzmsUAss-9XACJU5P0pfveGnoUqu3VEBxzsxhQXSA2AWgzFrlrvnsCEdMmBDrEU4d4Hxk2gzSY-otTDOoEeXb09XODeD3hPpasUbmdMVEc_IW2RY9cTqV8ZcTalFdfBiZmtRdbPOBbnRKSxGrFycXM6pSaB6yFFAstiZDAM7HdJBieQ08lX08Qt6896E7BWI60w7tLS9HfSD0lfSosUUdc4FB4W5qWLGUrGTElPDSrFoON5dZgl9CIwslMPP8CE0ZsUsLZb",
-    lwa_app_id="amzn1.application-oa2-client.eec9847fb0af47eda8cf571927f490ae",
-    lwa_client_secret="amzn1.oa2-cs.v1.53a491c479f707af037c73adb82e2b60246663f46f98368a10282a9ba3c2673e"
-)
